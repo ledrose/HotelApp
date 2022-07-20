@@ -1,0 +1,56 @@
+﻿
+@model IEnumerable<Room>    
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container p-3" >
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Room List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-action="Create" asp-controller="RoomSelect" class="btn btn-primary">Add new Room</a>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    @if (Model.Count()>0)
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <td>
+                        id
+                    </td>
+                    <td>
+                        price in workdays
+                    </td>
+                    <td>
+                        price in weekends
+                    </td>
+                    <td>
+                        type
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                <tr>
+                    <td width="10%">@obj.Id</td>
+                    <td width="35%">@obj.priceWorkday</td>
+                    <td width="35%">@obj.priceWeekends</td>
+                    <td width="20%">@obj.type</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    } 
+    else
+    {
+        <p>No rooms exist</p>
+    }
+</div>
+
