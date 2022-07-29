@@ -10,9 +10,16 @@ namespace HotelApp.Models
     {
         [Key]
         public int Id { get; set; }
-        public float priceWorkday { get; set; }
-        public float priceWeekends { get; set; }
-        public int type { get; set; }
+        [Required]
+        public float PriceWorkday { get; set; }
+        [Required]
+        public float PriceWeekends { get; set; }
+        [Required]
+        [Range(0,2,ErrorMessage = "Needs to be between 0 and 2")]
+        public int SpotNumber { get; set; }
+        [Required]
+        [Range(0, 2, ErrorMessage = "Needs to be between 0 and 2")]
+        public int Type { get; set; }
 
 
         public virtual ICollection<Reservation> Reservations { get; set; }

@@ -21,9 +21,69 @@ namespace HotelApp.Controllers
             return View(objList);
         }
         
+        //get-room
         public IActionResult Create()
         {   
             return View();
+        }
+
+        //post -create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Room obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Rooms.Add(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+
+        public IActionResult Edit(int? id)
+        {
+            if (id == null || id == 0)
+                return NotFound();
+            var obj = _db.Rooms.Find(id);
+            if (obj==null)
+                return NotFound();
+            return View(obj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Room obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Rooms.Update(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+                return NotFound();
+            var obj = _db.Rooms.Find(id); 
+            if (obj == null)
+                return NotFound();
+            return View(obj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(int? id)
+        {
+            var obj = _db.Rooms.Find(id);
+            if (obj == null)
+                return NotFound();
+            _db.Rooms.Remove(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

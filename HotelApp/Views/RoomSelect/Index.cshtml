@@ -31,6 +31,9 @@
                         price in weekends
                     </td>
                     <td>
+                        spotNumber
+                    </td>
+                    <td>
                         type
                     </td>
                 </tr>
@@ -40,9 +43,20 @@
                 {
                 <tr>
                     <td width="10%">@obj.Id</td>
-                    <td width="35%">@obj.priceWorkday</td>
-                    <td width="35%">@obj.priceWeekends</td>
-                    <td width="20%">@obj.type</td>
+                    <td width="10%">@obj.PriceWorkday</td>
+                    <td width="10%">@obj.PriceWeekends</td>
+                    <td width="10%">@obj.SpotNumber</td>
+                    <td width="10%">@obj.Type</td>
+                    <td width="30%" class="text-center">
+                        <div class="btn-group w-75" role="group">
+                            <a asp-action="Edit" asp-route-Id="@obj.Id" asp-controller="RoomSelect" class="btn btn-primary mx-2">
+                                Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="RoomSelect" class="btn btn-danger mx-2">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 }
             </tbody>
