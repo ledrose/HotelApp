@@ -17,6 +17,6 @@ namespace HotelApp.Models
 
 
         public virtual Room Room { get; set; }
-        public virtual Person Person { get; set; }
+        public virtual User Person { get; set; }
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220729142821_updated_room_table")]
-    partial class updated_room_table
+    [Migration("20220730080230_Upd2")]
+    partial class Upd2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,27 +20,6 @@ namespace HotelApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("HotelApp.Models.Person", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("age")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-                });
 
             modelBuilder.Entity("HotelApp.Models.Reservation", b =>
                 {
@@ -73,6 +52,33 @@ namespace HotelApp.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("HotelApp.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "user"
+                        });
+                });
+
             modelBuilder.Entity("HotelApp.Models.Room", b =>
                 {
                     b.Property<int>("Id")
@@ -97,10 +103,52 @@ namespace HotelApp.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("HotelApp.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Age = 0,
+                            Email = "admin@mail.ru",
+                            Password = "123456",
+                            RoleId = 1
+                        });
+                });
+
             modelBuilder.Entity("HotelApp.Models.Reservation", b =>
                 {
-                    b.HasOne("HotelApp.Models.Person", "Person")
-                        .WithMany("Reservations")
+                    b.HasOne("HotelApp.Models.User", "Person")
+                        .WithMany()
                         .HasForeignKey("PersonId");
 
                     b.HasOne("HotelApp.Models.Room", "Room")
@@ -112,9 +160,20 @@ namespace HotelApp.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("HotelApp.Models.Person", b =>
+            modelBuilder.Entity("HotelApp.Models.User", b =>
                 {
-                    b.Navigation("Reservations");
+                    b.HasOne("HotelApp.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("HotelApp.Models.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("HotelApp.Models.Room", b =>

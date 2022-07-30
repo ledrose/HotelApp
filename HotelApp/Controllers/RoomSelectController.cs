@@ -1,5 +1,6 @@
 ﻿using HotelApp.Data;
 using HotelApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace HotelApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class RoomSelectController : Controller
     {
         private readonly AppDbContext _db;
@@ -15,6 +17,7 @@ namespace HotelApp.Controllers
         {
             _db = db;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             IEnumerable<Room> objList = _db.Rooms;
