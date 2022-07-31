@@ -19,6 +19,7 @@ namespace HotelApp.Data
         public DbSet<Room> Rooms { get; set; }
 
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

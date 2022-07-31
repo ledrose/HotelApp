@@ -2,7 +2,7 @@
 
 namespace HotelApp.Migrations
 {
-    public partial class Upd1 : Migration
+    public partial class Base : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
