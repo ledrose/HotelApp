@@ -64,7 +64,7 @@ namespace HotelApp.Controllers
                 User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user == null)
                 {
-                    user = new User { Email = model.Email, Password = model.Password };
+                    user = new User { Email = model.Email, Password = model.Password, Age=model.Age,Name=model.Name,Surname=model.Surname};
                     Role userRole = await db.Roles.FirstOrDefaultAsync(r => r.Name=="user");
                     if (userRole != null)
                         user.Role = userRole;
@@ -79,7 +79,7 @@ namespace HotelApp.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("", "Некорректные значения в полях");
                 }
 
             }

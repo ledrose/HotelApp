@@ -18,5 +18,12 @@ namespace HotelApp.ViewModel
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Пароль введен неверно")]
         public String ConfirmPassword { get; set; }
+
+        [Required(ErrorMessage = "Не указано имя")]
+        public String Name { get; set; }
+        [Required(ErrorMessage = "Не указана фамилия")]
+        public String Surname { get; set; }
+        [Required(ErrorMessage = "Не указан возраст")]
+        public int Age { get; set; }
     }
 }

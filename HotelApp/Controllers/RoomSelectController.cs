@@ -75,14 +75,6 @@ namespace HotelApp.Controllers
                 {
                     obj=ConvertImageToByte(obj);
                 }
-                /*else
-                {
-                    var curObj = _db.Rooms.Find(obj.Id);
-                    obj.SourceFileName = curObj.SourceFileName;
-                    obj.ByteImage = curObj.ByteImage;
-                    obj.ContentType = curObj.ContentType;
-
-                }*/
                 _db.Rooms.Update(obj);
                 _db.SaveChanges();
                 return RedirectToAction("Index", "Home");
