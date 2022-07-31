@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,9 +24,13 @@ namespace HotelApp.Models
         public int Type { get; set; }
         public String Description { get; set; }
 
+        [NotMapped]
+        public IFormFile Image { get; set; }
 
-        public int ImageId { get; set; }
-        public virtual Image Image { get; set; }
+
+        public String ByteImage { get; set; }
+        public String SourceFileName { get; set; }
+        public String ContentType { get; set; }
 
 
         public virtual ICollection<Reservation> Reservations { get; set; }

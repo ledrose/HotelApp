@@ -7,12 +7,12 @@
     <div class="row justify-content-center">
     @foreach (var obj in Model)
     {
-        String imageString = "data:"+obj.Image.ContentType + ";base64," + Convert.ToBase64String(obj.Image.ByteImage, 0, obj.Image.ByteImage.Length);
+        String imageString = "data:" + obj.ContentType + ";base64," + obj.ByteImage;
         String roomType = obj.Type==0?"Нормальная": obj.Type == 1 ? "Улучшенная":"Элитная";
 
         <div class="col-4">
             <div class="card ">
-                <img alt=@(obj.Image.SourceFileName) src=@imageString class="card-img-top" height="300px" />
+                <img alt=@(obj.SourceFileName) src=@imageString class="card-img-top" height="300px" />
                 <div class="card-body">
                     <h5 class="card-title">
                         Количество мест: @(obj.SpotNumber)
@@ -20,6 +20,8 @@
                     <h5 class="card-title">
                         Тип комнаты: @roomType
                     </h5>
+                    <p class="card-text">Цена в рабочие дни: @(obj.PriceWorkday) руб./сут</p>
+                    <p class="card-text">Цена в выходные дни: @(obj.PriceWeekends) руб./сут</p>
                     @if (@obj.Description == null)
                     {
                         <p class="card-text">@(obj.Description)</p>

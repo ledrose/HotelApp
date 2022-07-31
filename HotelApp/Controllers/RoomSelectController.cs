@@ -1,6 +1,5 @@
 ﻿using HotelApp.Data;
 using HotelApp.Models;
-using HotelApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ namespace HotelApp.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            IEnumerable<Room> objList = _db.Rooms.Include(u=>u.Image);
+            IEnumerable<Room> objList = _db.Rooms;
             return View(objList);
         }
 
@@ -44,23 +43,12 @@ namespace HotelApp.Controllers
         //post -create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(RoomViewModel obj)
+        public IActionResult Create(Room obj)
         {
             if (ModelState.IsValid) 
             {
-                var Image = ConvertImageToByte(obj.Image);
-                _db.Images.Add(Image);
-                _db.SaveChanges();
-
-                Room room = new Room(){
-                    PriceWeekends = obj.PriceWeekends,
-                    PriceWorkday = obj.PriceWorkday,
-                    SpotNumber = obj.SpotNumber,
-                    Type = obj.Type,
-                    Description= obj.Description,
-                    ImageId = Image.Id,
-                };
-                _db.Rooms.Add(room);
+                obj = ConvertImageToByte(obj);
+                _db.Rooms.Add(obj);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -74,49 +62,30 @@ namespace HotelApp.Controllers
             var obj = _db.Rooms.Find(id);
             if (obj==null)
                 return NotFound();
-            RoomViewModel roomView = new RoomViewModel()
-            {
-                Description = obj.Description,
-                PriceWeekends = obj.PriceWeekends,
-                PriceWorkday = obj.PriceWorkday,
-                SpotNumber = obj.SpotNumber,
-                Type = obj.Type,
-                Id = obj.Id
-            };
-            return View(roomView);
+            return View(obj);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(RoomViewModel obj)
+        public IActionResult Edit(Room obj)
         {
             if (ModelState.IsValid)
             {
-                int imgId;
-                var Image = ConvertImageToByte(obj.Image);
-                if (Image!=null)
+                if (obj.Image!=null)
                 {
-                    _db.Images.Update(Image);
-                    _db.SaveChanges();
-                    imgId = Image.Id;
+                    obj=ConvertImageToByte(obj);
                 }
-                else
+                /*else
                 {
-                    imgId = _db.Rooms.Find(obj.Id).ImageId;
-                }
-                Room room = new Room()
-                {
-                    PriceWeekends = obj.PriceWeekends,
-                    PriceWorkday = obj.PriceWorkday,
-                    SpotNumber = obj.SpotNumber,
-                    Type = obj.Type,
-                    Description = obj.Description,
-                    ImageId = imgId,
-                    Id = obj.Id
-                };
-                _db.Rooms.Update(room);
+                    var curObj = _db.Rooms.Find(obj.Id);
+                    obj.SourceFileName = curObj.SourceFileName;
+                    obj.ByteImage = curObj.ByteImage;
+                    obj.ContentType = curObj.ContentType;
+
+                }*/
+                _db.Rooms.Update(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             return View(obj);
         }
@@ -125,19 +94,10 @@ namespace HotelApp.Controllers
         {
             if (id == null || id == 0)
                 return NotFound();
-            var obj = _db.Rooms.Find(id); 
+            Room obj = _db.Rooms.Find(id);
             if (obj == null)
                 return NotFound();
-            RoomViewModel roomView = new RoomViewModel()
-            {
-                Description = obj.Description,
-                PriceWeekends = obj.PriceWeekends,
-                PriceWorkday = obj.PriceWorkday,
-                SpotNumber = obj.SpotNumber,
-                Type = obj.Type,
-                Id = obj.Id
-            };
-            return View(roomView);
+            return View(obj);
         }
 
         [HttpPost]
@@ -147,29 +107,26 @@ namespace HotelApp.Controllers
             var obj = _db.Rooms.Find(id);
             if (obj == null)
                 return NotFound();
-            var img = obj.Image;
-            _db.Images.Remove(img);
             _db.Rooms.Remove(obj);
             _db.SaveChanges();
             return RedirectToAction("Index","Home");
         }
     
-        private Image ConvertImageToByte(IFormFile file)
+        private Room ConvertImageToByte(Room room)
         {
-            if (file==null)
+            if (room.Image==null)
             {
-                return null;
+                return room; //TODO
             }
-            Image img = new Image();
             using (var target = new MemoryStream())
             {
 
-                file.CopyTo(target);
-                img.ByteImage=target.ToArray();
+                room.Image.CopyTo(target);
+                room.ByteImage = Convert.ToBase64String(target.ToArray());
             }
-            img.ContentType = file.ContentType;
-            img.SourceFileName= System.IO.Path.GetFileName(file.FileName);
-            return img;
+            room.ContentType = room.Image.ContentType;
+            room.SourceFileName= System.IO.Path.GetFileName(room.Image.FileName);
+            return room;
         }
     }
 }

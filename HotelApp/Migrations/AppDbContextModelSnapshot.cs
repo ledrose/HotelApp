@@ -19,27 +19,6 @@ namespace HotelApp.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("HotelApp.Models.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("ByteImage")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("ContentType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SourceFileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Images");
-                });
-
             modelBuilder.Entity("HotelApp.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -105,17 +84,23 @@ namespace HotelApp.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description")
+                    b.Property<string>("ByteImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("PriceWeekends")
                         .HasColumnType("real");
 
                     b.Property<float>("PriceWorkday")
                         .HasColumnType("real");
+
+                    b.Property<string>("SourceFileName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SpotNumber")
                         .HasColumnType("int");
@@ -124,9 +109,6 @@ namespace HotelApp.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageId")
-                        .IsUnique();
 
                     b.ToTable("Rooms");
                 });
@@ -188,17 +170,6 @@ namespace HotelApp.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("HotelApp.Models.Room", b =>
-                {
-                    b.HasOne("HotelApp.Models.Image", "Image")
-                        .WithOne("Room")
-                        .HasForeignKey("HotelApp.Models.Room", "ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Image");
-                });
-
             modelBuilder.Entity("HotelApp.Models.User", b =>
                 {
                     b.HasOne("HotelApp.Models.Role", "Role")
@@ -208,11 +179,6 @@ namespace HotelApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("HotelApp.Models.Image", b =>
-                {
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("HotelApp.Models.Role", b =>
