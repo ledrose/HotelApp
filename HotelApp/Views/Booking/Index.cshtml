@@ -92,6 +92,8 @@
     </form>
 </div>
 <style>
+
+    
     .e-schedule .e-timeline-view .e-resource-left-td {
         vertical-align: bottom;
     }
@@ -101,7 +103,7 @@
     }
 
     .room-schedule.e-schedule .e-timeline-view .e-resource-left-td {
-        width: 300px;
+        width: 240px;
     }
 
     .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
@@ -135,7 +137,6 @@
     .bootstrap4 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text,
     .bootstrap5 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
         height: 37px;
-    }
     }
 
         .bootstrap4 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
@@ -226,15 +227,16 @@
             border-color: #969696;
         }
 
-    .e-schedule .template-wrap {
+
+    .e-schedule .template-wrap, .e-resource-text {
         display: flex;
         height: 100%;
         text-align: left;
     }
 
-        .e-schedule .template-wrap > div {
+        .e-schedule .template-wrap > div, .e-resource-text > div {
             border-right: 1px solid #0000001f;
-            flex: 0 0 35%;
+            flex: 0 0 33%;
             font-weight: 500;
             line-height: 58px;
             overflow: hidden;
@@ -242,7 +244,7 @@
             text-overflow: ellipsis;
         }
 
-            .e-schedule .template-wrap > div:last-child {
+            .e-schedule .template-wrap > div:last-child, .e-resource-text > div:last-child {
                 border-right: 0;
             }
 
@@ -282,7 +284,26 @@
         .e-schedule .room-capacity {
             display: none;
         }
+
+
     }
+
+
+    /*
+    .e-schedule .template-wrap, .e-resource-text {
+        display: flex;
+        text-align: left;
+    }
+
+        .template-wrap :nth-child(n), .e-resource-text :nth-child(n) {
+            margin: -1px 1px 1px -1px;
+            line-height: 2em;
+            border-top: 1px solid blue;
+            border-left: 1px solid green;
+            padding: 0.4em;
+            float: left;
+        }
+     */
 </style>
 <script id="resource-template" type="text/x-template">
     <div class='template-wrap'>
