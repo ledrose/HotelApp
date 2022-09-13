@@ -17,7 +17,7 @@ namespace HotelApp.Models
         [Required]
         public float PriceWeekends { get; set; }
         [Required]
-        [Range(0,2,ErrorMessage = "Needs to be between 0 and 2")]
+        [Range(1,3,ErrorMessage = "Needs to be between 1 and 3")]
         public int SpotNumber { get; set; }
         [Required]
         [Range(1, 3, ErrorMessage = "Needs to be between 1 and 3")]

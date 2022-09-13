@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 
 namespace HotelApp.ViewModels
 {
-    public class ResourceDataSourceModel
+    public class RoomScheduleModel
     {
-        public string Text { set; get; }
         public int Id { set; get; }
+        public String Name { get; set; }
         public string Color { set; get; }
+        public int Capacity { get; set; }
+        public String Type { get; set; }
     }
+
 }
