@@ -33,7 +33,7 @@ namespace HotelApp.Models
         public String ContentType { get; set; }
 
 
-        public virtual ICollection<Reservation> Reservations { get; set; }
+        public List<Reservation> Reservations { get; set; }
 
     }
 }

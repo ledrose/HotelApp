@@ -1,5 +1,70 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Syncfusion.EJ2.Schedule
+@using HotelApp.Models
+@model Reservation
 @{
+    ViewData["Title"] = "Booking Page";
 }
+
+<div class="text-center">
+    <form method="post" asp-action="Index" enctype="multipart/form-data">
+        <div class="border p-3">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="row">
+                <div class="col-8">
+
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label asp-for="StartTime"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="StartTime" class="form-control" />
+                            <span asp-validation-for="StartTime"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label asp-for="EndTime"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="EndTime" class="form-control" />
+                            <span asp-validation-for="EndTime"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label asp-for="ChildrenBed"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="ChildrenBed" class="form-control" />
+                            <span asp-validation-for="ChildrenBed"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label asp-for="RoomId"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="RoomId" class="form-control" />
+                            <span asp-validation-for="RoomId"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-8 offset-4 row">
+                            <div class="col">
+                                <input type="submit" class="btn btn-info w-100" value="Add" />
+                            </div>
+                            <div class="col">
+                                <a asp-controller="RoomSelect" asp-action="Index" class="btn btn-success w-100">Back</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

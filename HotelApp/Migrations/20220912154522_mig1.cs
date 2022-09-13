@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HotelApp.Migrations
 {
-    public partial class Base1 : Migration
+    public partial class mig1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -73,8 +73,8 @@ namespace HotelApp.Migrations
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ChildrenBed = table.Column<bool>(type: "bit", nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: true),
-                    PersonId = table.Column<int>(type: "int", nullable: true)
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,13 +84,13 @@ namespace HotelApp.Migrations
                         column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reservations_Users_PersonId",
-                        column: x => x.PersonId,
+                        name: "FK_Reservations_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -109,14 +109,14 @@ namespace HotelApp.Migrations
                 values: new object[] { 1, 0, "admin@mail.ru", null, "123456", 1, null });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_PersonId",
-                table: "Reservations",
-                column: "PersonId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reservations_RoomId",
                 table: "Reservations",
                 column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_UserId",
+                table: "Reservations",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

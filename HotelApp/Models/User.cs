@@ -17,8 +17,8 @@ namespace HotelApp.Models
         public int Age { get; set; }
         
         public int RoleId { get; set; }
-        public virtual Role Role { get; set; }
+        public Role Role { get; set; }
 
-        public virtual IEnumerable<Reservation> Reservations { get; set; }
+        public List<Reservation> Reservations { get; set; }
     }
 }

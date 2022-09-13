@@ -23,9 +23,9 @@ namespace HotelApp.Controllers
         public IActionResult Index()
 
         {
-            return View();
+            //return RedirectToAction("Index", "Booking");
             //string role = User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
-            //return Content($"ваша роль: {role}");
+            return View();
         }
 
         public IActionResult Privacy()

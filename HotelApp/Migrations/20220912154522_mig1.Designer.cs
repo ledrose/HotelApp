@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220731142123_Base1")]
-    partial class Base1
+    [Migration("20220912154522_mig1")]
+    partial class mig1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,20 +34,20 @@ namespace HotelApp.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RoomId")
+                    b.Property<int>("RoomId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
-
                     b.HasIndex("RoomId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -159,17 +159,21 @@ namespace HotelApp.Migrations
 
             modelBuilder.Entity("HotelApp.Models.Reservation", b =>
                 {
-                    b.HasOne("HotelApp.Models.User", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId");
-
                     b.HasOne("HotelApp.Models.Room", "Room")
                         .WithMany("Reservations")
-                        .HasForeignKey("RoomId");
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Person");
+                    b.HasOne("HotelApp.Models.User", "User")
+                        .WithMany("Reservations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Room");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HotelApp.Models.User", b =>
@@ -189,6 +193,11 @@ namespace HotelApp.Migrations
                 });
 
             modelBuilder.Entity("HotelApp.Models.Room", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("HotelApp.Models.User", b =>
                 {
                     b.Navigation("Reservations");
                 });
