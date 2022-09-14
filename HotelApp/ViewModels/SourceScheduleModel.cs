@@ -12,6 +12,7 @@ namespace HotelApp.ViewModels
         public String Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public bool IsBlock { get; set; }
         public int RoomId { get; set; }
     }
 }

@@ -35,7 +35,9 @@ namespace HotelApp.Controllers
                     Name=(room.Id.ToString()+" комната"),
                     Capacity=room.SpotNumber,
                     Type=(room.SpotNumber==1)? "Нормальная" : (room.SpotNumber == 2)?"Улучшенная":"Элитная",
-                    Color= "#ea7a57"
+                    PriceWeekends=room.PriceWeekends,
+                    PriceWorkday = room.PriceWorkday,
+                    Color = "#ea7a57"
                 });;
             }
             ViewBag.RoomDatas = roomData;
@@ -51,10 +53,12 @@ namespace HotelApp.Controllers
                     Description ="Description",
                     StartTime=res.StartTime,
                     EndTime=res.EndTime,
-                    RoomId=res.RoomId
+                    RoomId=res.RoomId,
+                    IsBlock = true
                 });
             }
             ViewBag.datasources = sourceData;
+            ViewBag.newId = sourceData.Count()+1;
 
             ViewBag.ResourceNames = new string[] { "HotelRoom" };
 
@@ -91,31 +95,18 @@ namespace HotelApp.Controllers
                 res.UserId = user.Id;
                 db.Reservations.Add(res);
                 db.SaveChanges();
-
-
-                /*
-                User us = db.Users.Include(u => u.Reservations).FirstOrDefault(u => u.Email == userName);
-                foreach (Reservation r in us.Reservations)
-                {
-                    System.Console.WriteLine(r.ToString());
-                    System.Console.WriteLine("Ok");
-                }
-                */
-                /*
-                IEnumerable<Reservation> view = db.Reservations.Include(r=>r.Room);
-                foreach (Reservation r in view)
-                {
-                    var ro = r.Room;
-                    var us = r.User;
-                    System.Console.WriteLine("Ok");
-                }
-                */
                 return RedirectToAction("Index", "RoomSelect");
             }
             return View(res);
         }
-        
-
+        [Authorize]
+        public IActionResult List()
+        {
+            var userName = HttpContext.User.Identity.Name;
+            var user = db.Users.FirstOrDefault(u => u.Email == userName);
+            IEnumerable<Reservation> res =db.Reservations.Where(r => r.UserId == user.Id);
+            return View(res);
+        }
 
     }
 }

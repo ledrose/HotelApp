@@ -1,14 +1,15 @@
-﻿@using Syncfusion.EJ2.Schedule
-@using HotelApp.Models
+﻿@using HotelApp.Models
 @model Reservation
 @{
     ViewData["Title"] = "Booking Page";
+
+
 }
 
 <div class="text-center">
 
     <div class="schedule-wrapper">
-        <ejs-schedule id="schedule" width="100%" height="500px" cssClass="room-schedule" selectedDate="DateTime.Today" currentView="TimelineMonth" resourceHeaderTemplate="#resource-template" actionBegin="onActionBegin" eventRendered="onEventRendered" renderCell="onRenderCell" popupOpen="onPopupOpen">
+        <ejs-schedule id="schedule" width="100%" height="500px" cssClass="room-schedule" selectedDate="DateTime.Today" currentView="TimelineMonth" resourceHeaderTemplate="#resource-template" actionBegin="onActionBegin" eventRendered="onEventRendered" renderCell="onRenderCell" popupOpen="onPopupOpen" cellClick="onCellClick" actionComplete="onActionComplete">
             <e-schedule-workhours start="00:00" end="24:00"></e-schedule-workhours>
             <e-schedule-timescale slotCount="1" interval="240"></e-schedule-timescale>
             <e-schedule-views>
@@ -36,25 +37,9 @@
                 <div class="row">
                     <div class="col-8">
 
-                        <div class="form-group row">
-                            <div class="col-4">
-                                <label asp-for="StartTime"></label>
-                            </div>
-                            <div class="col-8">
-                                <input asp-for="StartTime" class="form-control" />
-                                <span asp-validation-for="StartTime"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-4">
-                                <label asp-for="EndTime"></label>
-                            </div>
-                            <div class="col-8">
-                                <input asp-for="EndTime" class="form-control" />
-                                <span asp-validation-for="EndTime"></span>
-                            </div>
-                        </div>
+                        <input id="stDate" type="datetime" value="@(DateTime.Now.ToString("dd.MM.yyyy, HH:mm"))" asp-for="StartTime" hidden class="form-control" />
+                        <input id="enDate" type="datetime" asp-for="EndTime" hidden class="form-control" />
+                        <input id="roomDatas" data-value="@ViewBag.RoomDatas" hidden/>
 
                         <div class="form-group row">
                             <div class="col-4">
@@ -65,17 +50,11 @@
                                 <span asp-validation-for="ChildrenBed"></span>
                             </div>
                         </div>
-
-                        <div class="form-group row">
-                            <div class="col-4">
-                                <label asp-for="RoomId"></label>
-                            </div>
-                            <div class="col-8">
-                                <input asp-for="RoomId" class="form-control" />
-                                <span asp-validation-for="RoomId"></span>
-                            </div>
-                        </div>
-
+                        
+                        
+                        <input id="roomId" asp-for="RoomId" class="form-control"  hidden />
+                       
+                        <div id="fPrice"></div>
                         <div class="form-group row">
                             <div class="col-8 offset-4 row">
                                 <div class="col">
@@ -311,11 +290,13 @@
             <div class="room-name">${getRoomName(data)}</div>
             <div class="room-type">${getRoomType(data)}</div>
             <div class="room-capacity">${getRoomCapacity(data)}</div>
+            <div class="room-priceWeekend">${getPrWeek(data)}</div>
+            <div class="room-priceWorkday">${getPrWork(data)}</div>
         </div>
     </script>
     <script type="text/javascript">
         var isReadOnly = function (endDate) {
-            return (endDate < new Date(new Date().getFullYear(), 6, 31, 0, 0));
+            return (endDate < Date.now());
         };
         window.getRoomName = function (value) {
             return value.resourceData[value.resource.textField];
@@ -326,25 +307,23 @@
         window.getRoomCapacity = function (value) {
             return value.resourceData.Capacity;
         };
+        window.getPrWeek = function (value) {
+            return value.resourceData.PriceWeekends;
+        };
+
+        window.getPrWork = function (value) {
+            return value.resourceData.PriceWorkday;
+        };
+
+
         function onPopupOpen(args) {
-            var data = args.data;
-            if (args.type === 'QuickInfo' || args.type === 'Editor' || args.type === 'RecurrenceAlert' || args.type === 'DeleteAlert') {
-                var target = (args.type === 'RecurrenceAlert' ||
-                    args.type === 'DeleteAlert') ? args.element[0] : args.target;
-                if (!ej.base.isNullOrUndefined(target) && target.classList.contains('e-work-cells')) {
-                    if ((target.classList.contains('e-read-only-cells')) || (!this.isSlotAvailable(data))) {
-                        args.cancel = true;
-                    }
-                }
-                else if (!ej.base.isNullOrUndefined(target) && target.classList.contains('e-appointment') &&
-                    (isReadOnly(data.EndTime))) {
-                    args.cancel = true;
-                }
-            }
+            args.cancel = true
         }
+
+
         function onRenderCell(args) {
             if (args.element.classList.contains('e-work-cells')) {
-                if (args.date < new Date(new Date().getFullYear(), 6, 31, 0, 0)) {
+                if (isReadOnly(args.date)) {
                     args.element.setAttribute('aria-readonly', 'true');
                     args.element.classList.add('e-read-only-cells');
                 }
@@ -374,5 +353,64 @@
                     args.cancel = true;
                 }
             }
+        }
+        var resVisualized = false
+        var curRes;
+        function onCellClick(args) {
+            if (!resVisualized) {
+                var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+                var data = [{
+                    Id: @(ViewBag.newId),
+                    Subject: 'Бронирование',
+                    Description: 'Бронирование',
+                    RoomId: args.groupIndex + 1,
+                    StartTime: args.startTime,
+                    EndTime: args.endTime,
+                    IsBlock: false,
+                    IsAllDay: true
+                }];
+                curRes = data[0];
+                console.log(data);
+                scheduleObj.addEvent(data);
+                resVisualized = true;
+            }
+
+
+        }
+        function onActionComplete(args) {
+            console.log(args);
+            if (args.requestType == "eventChanged" || args.requestType == "eventCreated") {
+                var curRes = args.data[0];
+                var roomId = curRes.RoomId;
+                $("#stDate").val(transformDate(curRes.StartTime));
+                $("#enDate").val(transformDate(curRes.EndTime));
+                $("#roomId").val(roomId);
+                var price = 0;
+                
+                var priceWeekends = parseFloat($(".room-priceWeekend")[roomId - 1].innerHTML);
+                var priceWorkday = parseFloat($(".room-priceWorkday")[roomId - 1].innerHTML);
+                var loop = new Date(curRes.StartTime);
+                while (loop < curRes.EndTime) {
+                    console.log(loop);
+                    var dayOfWeek = loop.getDate();
+                    if ((dayOfWeek == 6) || (dayOfWeek == 0)) {
+                        price +=priceWeekends;
+                    }
+                    else {
+                        price +=priceWorkday;
+                    }
+
+                    const newDate = loop.setDate(loop.getDate() + 1);
+                    loop = new Date(newDate);
+                }
+                $("#fPrice").html("Общая цена:"+price);
+
+            }
+
+        }
+
+
+        function transformDate(dt) {
+            return dt.getDate().toString() + "." + (dt.getMonth() + 1).toString() + "." + dt.getFullYear().toString() + ", " + dt.getHours().toString() + ":" + dt.getMinutes().toString();
         }
     </script>

@@ -36,6 +36,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="RoomSelect" asp-action="List">Room List</a>
                             </li>
                         }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="List">Room List</a>
+                            </li>
+                        }
                     </ul>
                 </div>
                 <div class="nav-item ustify-content-end">

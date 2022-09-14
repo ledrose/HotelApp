@@ -12,6 +12,8 @@ namespace HotelApp.ViewModels
         public string Color { set; get; }
         public int Capacity { get; set; }
         public String Type { get; set; }
+        public float PriceWeekends { get; set; }
+        public float PriceWorkday { get; set; }
     }
 
 }
