@@ -1,7 +1,6 @@
 ﻿@model Room
 
-<form method="post" asp-action="DeletePost">
-    <input asp-for="Id" hidden />
+<form method="post" asp-action="DeletePost" enctype="multipart/form-data">
     <div class="border p-3">
         <div class="form-group row">
             <h2 class="text-info pl-3">Delete Room</h2>
@@ -9,6 +8,7 @@
 
         <div class="row">
             <div class="col-8">
+                <input asp-for="Id" hidden/>
 
                 <div class="form-group row">
                     <div class="col-4">
@@ -49,6 +49,18 @@
                         <span asp-validation-for="Type"></span>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Description" disabled class="form-control" />
+                        <span asp-validation-for="Description"></span>
+                    </div>
+                </div>
+
+
 
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">

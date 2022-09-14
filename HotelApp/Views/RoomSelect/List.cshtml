@@ -1,0 +1,74 @@
+﻿
+@model IEnumerable<Room>    
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container p-3" >
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Room List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-action="Create" asp-controller="RoomSelect" class="btn btn-primary">Add new Room</a>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    @if (Model.Count()>0)
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <td>
+                        id
+                    </td>
+                    <td>
+                        price in workdays
+                    </td>
+                    <td>
+                        price in weekends
+                    </td>
+                    <td>
+                        spotNumber
+                    </td>
+                    <td>
+                        type
+                    </td>
+                    <td>
+                        description
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                <tr>
+                    <td width="10%">@obj.Id</td>
+                    <td width="10%">@obj.PriceWorkday</td>
+                    <td width="10%">@obj.PriceWeekends</td>
+                    <td width="10%">@obj.SpotNumber</td>
+                    <td width="10%">@obj.Type</td>
+                    <td width="30%">@obj.Description</td>
+                    <td width="20%" class="text-center">
+                        <div class="btn-group w-75" role="group">
+                            <a asp-action="Edit" asp-route-Id="@obj.Id" asp-controller="RoomSelect" class="btn btn-primary mx-2">
+                                Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="RoomSelect" class="btn btn-danger mx-2">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    } 
+    else
+    {
+        <p>No rooms exist</p>
+    }
+</div>
+

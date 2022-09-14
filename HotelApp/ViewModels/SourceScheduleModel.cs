@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HotelApp.Models
+namespace HotelApp.ViewModels
 {
-    public class Reservation
+    public class SourceScheduleModel
     {
-        [Key]
         public int Id { get; set; }
+        public string Subject { get; set; }
+        public String Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-
-        public bool ChildrenBed { get; set; }
-
-
+        public bool IsBlock { get; set; }
         public int RoomId { get; set; }
-        public Room Room { get; set; }
-
-        public int UserId { get; set; }
-        public User User { get; set; }
     }
 }
