@@ -349,15 +349,14 @@
                 else if (args.requestType === 'eventChange') {
                     data = args.data;
                 }
-                if (!this.isSlotAvailable(data)) {
+                if (!this.isSlotAvailable(data) || (data.StartTime < Date.now())) {
                     args.cancel = true;
                 }
             }
         }
         var resVisualized = false
-        var curRes;
         function onCellClick(args) {
-            if (!resVisualized) {
+            if (!resVisualized && (args.startTime > Date.now())) {
                 var scheduleObj = document.getElementById('schedule').ej2_instances[0];
                 var data = [{
                     Id: @(ViewBag.newId),
@@ -369,16 +368,16 @@
                     IsBlock: false,
                     IsAllDay: true
                 }];
-                curRes = data[0];
-                console.log(data);
                 scheduleObj.addEvent(data);
-                resVisualized = true;
+                if (args.cancel == false) {
+                    resVisualized = true;
+                }
+                
             }
 
 
         }
         function onActionComplete(args) {
-            console.log(args);
             if (args.requestType == "eventChanged" || args.requestType == "eventCreated") {
                 var curRes = args.data[0];
                 var roomId = curRes.RoomId;
@@ -391,8 +390,7 @@
                 var priceWorkday = parseFloat($(".room-priceWorkday")[roomId - 1].innerHTML);
                 var loop = new Date(curRes.StartTime);
                 while (loop < curRes.EndTime) {
-                    console.log(loop);
-                    var dayOfWeek = loop.getDate();
+                    var dayOfWeek = (loop.getDay()) % 7;
                     if ((dayOfWeek == 6) || (dayOfWeek == 0)) {
                         price +=priceWeekends;
                     }

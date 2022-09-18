@@ -8,7 +8,7 @@
     @foreach (var obj in Model)
     {
         String imageString = "data:" + obj.ContentType + ";base64," + obj.ByteImage;
-        String roomType = obj.Type==0?"Нормальная": obj.Type == 1 ? "Улучшенная":"Элитная";
+        String roomType = obj.Type==1?"Нормальная": obj.Type == 2 ? "Комфорт":"Люкс";
 
         <div class="col-4">
             <div class="card ">

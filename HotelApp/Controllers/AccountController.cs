@@ -23,6 +23,7 @@ namespace HotelApp.Controllers
             db = _db;
         }
 
+
         [HttpGet]
         public IActionResult Login()
         {

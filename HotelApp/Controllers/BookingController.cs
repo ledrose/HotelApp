@@ -34,7 +34,7 @@ namespace HotelApp.Controllers
                     Id=room.Id,
                     Name=(room.Id.ToString()+" комната"),
                     Capacity=room.SpotNumber,
-                    Type=(room.SpotNumber==1)? "Нормальная" : (room.SpotNumber == 2)?"Улучшенная":"Элитная",
+                    Type=(room.SpotNumber==1)? "Нормальная" : (room.SpotNumber == 2)?"Комфорт":"Люкс",
                     PriceWeekends=room.PriceWeekends,
                     PriceWorkday = room.PriceWorkday,
                     Color = "#ea7a57"
@@ -61,26 +61,6 @@ namespace HotelApp.Controllers
             ViewBag.newId = sourceData.Count()+1;
 
             ViewBag.ResourceNames = new string[] { "HotelRoom" };
-
-            /*
-            List<SourceScheduleModel> reservs = new List<SourceScheduleModel>();
-            IEnumerable<Reservation> resList = db.Reservations;
-            foreach (Reservation reserv in resList)
-            {
-                reservs.Add(new SourceScheduleModel {RoomId=reserv.RoomId, StartTime=reserv.StartTime,EndTime=reserv.EndTime,IsAllDay=false,Subject="Hey",Id=reserv.Id});
-            }
-            ViewBag.dataSource = reservs;
-
-            List<RoomScheduleModel> rooms = new List<RoomScheduleModel>();
-            IEnumerable<Room> roomList = db.Rooms;
-            foreach (Room room in roomList)
-            {
-                rooms.Add(new RoomScheduleModel {Id=room.Id,Text=room.Id+" комната",Color= "#cb6bb2" });
-            }
-            ViewBag.rooms = rooms;
-            */
-
-
             return View();
         }
 
