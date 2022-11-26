@@ -90,5 +90,15 @@ namespace HotelApp.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult AdminList()
+        {
+            var adminRes = new List<AdminReservationModel>();
+            var reservations = _db.Reservations.Include(r => r.User);
+            foreach (Reservation r in reservations) {
+                adminRes.Add(_mapper.Map<AdminReservationModel>(r));
+            }
+            return View(adminRes);
+        }
     }
 }

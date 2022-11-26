@@ -44,7 +44,7 @@ namespace HotelApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mgo+DSMBMAY9C3t2VVhiQlFaclxJXGNWf1FpR2NbfU55flFOallRVAciSV9jS3xTf0RhWH9ccHZdRWJZWQ==");
+            //Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mgo+DSMBMAY9C3t2VVhiQlFaclxJXGNWf1FpR2NbfU55flFOallRVAciSV9jS3xTf0RhWH9ccHZdRWJZWQ==");
 
             if (env.IsDevelopment())
             {

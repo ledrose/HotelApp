@@ -22,6 +22,9 @@ namespace HotelApp.Data
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => "Description"))
                 .ForMember(dest => dest.IsBlock, opt => opt.MapFrom(src => true));
             CreateMap<RegisterModel,User>();
+            CreateMap<Reservation, AdminReservationModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.User.Surname));
         }
     }
 }

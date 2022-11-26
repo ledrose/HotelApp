@@ -306,7 +306,7 @@
 
 
         function onPopupOpen(args) {
-            args.cancel = true
+           //args.cancel = true
         }
 
 
@@ -330,6 +330,7 @@
             }
         }
         function onActionBegin(args) {
+            console.log(args);
             if (args.requestType === 'eventCreate' || args.requestType === 'eventChange') {
                 var data;
                 if (args.requestType === 'eventCreate') {
@@ -357,6 +358,7 @@
                     IsBlock: false,
                     IsAllDay: true
                 }];
+                console.log("Hy!!");
                 scheduleObj.addEvent(data);
                 if (args.cancel == false) {
                     resVisualized = true;

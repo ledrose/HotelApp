@@ -11,16 +11,19 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace HotelApp.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AppDbContext db;
+        private readonly AppDbContext _db;
+        private readonly IMapper _mapper;
 
-        public AccountController(AppDbContext _db)
+        public AccountController(AppDbContext db, IMapper mapper)
         {
-            db = _db;
+            _db = db;
+            _mapper = mapper;
         }
 
 
@@ -36,10 +39,9 @@ namespace HotelApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users
+                User user = await _db.Users
                     .Include(u=>u.Role)
                     .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
-
                 if (user != null)
                 {
                     await Authenticate(user);
@@ -62,20 +64,16 @@ namespace HotelApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                User user = await _db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user == null)
                 {
-                    user = new User { Email = model.Email, Password = model.Password, Age=model.Age,Name=model.Name,Surname=model.Surname};
-                    Role userRole = await db.Roles.FirstOrDefaultAsync(r => r.Name=="user");
+                    user = _mapper.Map<User>(model);
+                    Role userRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name=="user");
                     if (userRole != null)
                         user.Role = userRole;
-
-                    db.Users.Add(user);
-
-                    await db.SaveChangesAsync();
-
+                    _db.Users.Add(user);
+                    await _db.SaveChangesAsync();
                     await Authenticate(user);
-
                     return RedirectToAction("Index", "Home");
                 }
                 else
