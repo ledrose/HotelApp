@@ -37,7 +37,7 @@ namespace HotelApp
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                     options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                 });
-
+            services.AddAutoMapper(typeof(AppMappingProfile));
             services.AddControllersWithViews();
         }
 

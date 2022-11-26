@@ -1,6 +1,7 @@
 ﻿using HotelApp.Data;
 using HotelApp.Models;
 using HotelApp.ViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,50 +17,31 @@ namespace HotelApp.Controllers
     [Authorize]
     public class BookingController : Controller
     {
-        private AppDbContext db;
-
-        public BookingController(AppDbContext _db)
+        private readonly AppDbContext _db;
+        private readonly IMapper _mapper;
+        public BookingController(AppDbContext db, IMapper mapper)
         {
-            db = _db;
+            _db = db;
+            _mapper = mapper;
         }
 
-        public IActionResult Index(int Id)
+        public IActionResult Index()
         {
 
             List<RoomScheduleModel> roomData = new List<RoomScheduleModel>();
-            IEnumerable<Room> rooms = db.Rooms;
-            foreach (Room room in rooms)
+            foreach (Room room in _db.Rooms)
             {
-                roomData.Add(new RoomScheduleModel {
-                    Id=room.Id,
-                    Name=(room.Id.ToString()+" комната"),
-                    Capacity=room.SpotNumber,
-                    Type=(room.SpotNumber==1)? "Нормальная" : (room.SpotNumber == 2)?"Комфорт":"Люкс",
-                    PriceWeekends=room.PriceWeekends,
-                    PriceWorkday = room.PriceWorkday,
-                    Color = "#ea7a57"
-                });;
+                roomData.Add(_mapper.Map<RoomScheduleModel>(room));
             }
             ViewBag.RoomDatas = roomData;
 
             List<SourceScheduleModel> sourceData = new List<SourceScheduleModel>();
-            IEnumerable<Reservation> reservations = db.Reservations;
-            foreach (Reservation res in reservations)
+            foreach (Reservation res in _db.Reservations)
             {
-                sourceData.Add(new SourceScheduleModel
-                {
-                    Id=res.Id,
-                    Subject = "Забронировано",
-                    Description ="Description",
-                    StartTime=res.StartTime,
-                    EndTime=res.EndTime,
-                    RoomId=res.RoomId,
-                    IsBlock = true
-                });
+                sourceData.Add(_mapper.Map<SourceScheduleModel>(res));
             }
             ViewBag.datasources = sourceData;
-            ViewBag.newId = sourceData.Count()+1;
-
+            ViewBag.newId = sourceData.Count + 1;
             ViewBag.ResourceNames = new string[] { "HotelRoom" };
             return View();
         }
@@ -71,10 +53,10 @@ namespace HotelApp.Controllers
             if (ModelState.IsValid)
             {
                 var userName = HttpContext.User.Identity.Name;
-                var user = db.Users.FirstOrDefault(u=>u.Email==userName);
+                var user = _db.Users.FirstOrDefault(u=>u.Email==userName);
                 res.UserId = user.Id;
-                db.Reservations.Add(res);
-                db.SaveChanges();
+                _db.Reservations.Add(res);
+                _db.SaveChanges();
                 return RedirectToAction("Index", "RoomSelect");
             }
             return View(res);
@@ -83,10 +65,30 @@ namespace HotelApp.Controllers
         public IActionResult List()
         {
             var userName = HttpContext.User.Identity.Name;
-            var user = db.Users.FirstOrDefault(u => u.Email == userName);
-            IEnumerable<Reservation> res =db.Reservations.Where(r => r.UserId == user.Id);
+            var user = _db.Users.FirstOrDefault(u => u.Email == userName);
+            IEnumerable<Reservation> res =_db.Reservations.Where(r => r.UserId == user.Id);
             return View(res);
         }
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            Reservation obj = _db.Reservations.Find(id);
+            if (obj == null)
+                return NotFound();
+            return View(obj);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(int? id)
+        {
+            var obj = _db.Reservations.Find(id);
+            if (obj == null)
+                return NotFound();
+            _db.Reservations.Remove(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

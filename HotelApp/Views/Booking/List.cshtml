@@ -27,9 +27,6 @@
                     <td>
                         Room
                     </td>
-                    <td>
-                        ChildrenBed
-                    </td>
                 </tr>
             </thead>
             <tbody>
@@ -37,12 +34,11 @@
                 {
                     <tr>
                         <td width="10%">@obj.Id</td>
-                        <td width="30%">@(obj.StartTime+" - "+obj.EndTime)</td>
+                        <td width="30%">@(obj.StartTime.ToLongDateString()+" - "+obj.EndTime.ToLongDateString())</td>
                         <td width="20%">@(obj.RoomId+" комната")</td>
-                        <td width="10%">@obj.ChildrenBed</td>
                         <td width="10%" class="text-center">
                             <div class="btn-group w-75" role="group">
-                                <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="RoomSelect" class="btn btn-danger mx-2">
+                                <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="Booking" class="btn btn-danger mx-2">
                                     Delete
                                 </a>
                             </div>

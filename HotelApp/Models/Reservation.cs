@@ -13,9 +13,6 @@ namespace HotelApp.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
-        public bool ChildrenBed { get; set; }
-
-
         public int RoomId { get; set; }
         public Room Room { get; set; }
 

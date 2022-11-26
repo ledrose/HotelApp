@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HotelApp.Models;
-using HotelApp.ViewModel;
+using HotelApp.ViewModels;
 using HotelApp.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,7 +16,7 @@ namespace HotelApp.Controllers
 {
     public class AccountController : Controller
     {
-        private AppDbContext db;
+        private readonly AppDbContext db;
 
         public AccountController(AppDbContext _db)
         {

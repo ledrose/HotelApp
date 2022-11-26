@@ -39,22 +39,11 @@
 
                         <input id="stDate" type="datetime" value="@(DateTime.Now.ToString("dd.MM.yyyy, HH:mm"))" asp-for="StartTime" hidden class="form-control" />
                         <input id="enDate" type="datetime" asp-for="EndTime" hidden class="form-control" />
-                        <input id="roomDatas" data-value="@ViewBag.RoomDatas" hidden/>
-
-                        <div class="form-group row">
-                            <div class="col-4">
-                                <label asp-for="ChildrenBed"></label>
-                            </div>
-                            <div class="col-8">
-                                <input asp-for="ChildrenBed" class="form-control" />
-                                <span asp-validation-for="ChildrenBed"></span>
-                            </div>
-                        </div>
-                        
+                        <input id="roomDatas" data-value="@ViewBag.RoomDatas" hidden/>                        
                         
                         <input id="roomId" asp-for="RoomId" class="form-control"  hidden />
                        
-                        <div id="fPrice"></div>
+                        <div id="fPrice">Общая цена: 0 руб</div>
                         <div class="form-group row">
                             <div class="col-8 offset-4 row">
                                 <div class="col">
@@ -401,7 +390,7 @@
                     const newDate = loop.setDate(loop.getDate() + 1);
                     loop = new Date(newDate);
                 }
-                $("#fPrice").html("Общая цена:"+price);
+                $("#fPrice").html("Общая цена: "+price+" руб");
 
             }
 
