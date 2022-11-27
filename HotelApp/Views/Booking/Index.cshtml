@@ -9,26 +9,49 @@
 <div id="visualization"></div>
 <script type="text/javascript">
     var groupsSer = '@Html.Raw(Json.Serialize(ViewBag.GroupData))';
-    var groups = JSON.parse(groupsSer);
+    var groups = new vis.DataSet(JSON.parse(groupsSer));
     var itemsSer = '@Html.Raw(Json.Serialize(ViewBag.ItemData))';
-    var items = JSON.parse(itemsSer);
-    groups.forEach((group) => {
-        group.content = `<div class='roomName'>${group.id} комната</div><div class='roomType'>${group.type}</div><div class='roomCapacity'>${group.capacity} мест</div> `
-    });
-    // DOM element where the Timeline will be attached
+    var items = new vis.DataSet(JSON.parse(itemsSer));
+
     var container = document.getElementById('visualization');
-    var start = new Date((new Date()).getTime() - 5 * 24 * 60 * 60 * 1000);
-    var end = new Date((new Date()).getTime() + 25 * 24 * 60 * 60 * 1000);
+
+    var hour = 60 * 60 * 1000;
+    var start = new Date((new Date()).getTime() - 5 * 24 * hour);
+    var end = new Date((new Date()).getTime() + 25 * 24 * hour);
     var itemCreated = false
+    var newItemId = null;
+
+    function isIntercepting(item, idList) {
+        var check = false;
+        idList.forEach((id) => {
+            if (id != item.id) {
+                var curItem = items.get(id);
+                if (curItem.group == item.group) {
+                    var startTime = (new Date(curItem.start)).getTime();
+                    var endTime = (new Date(curItem.end)).getTime();
+                    var itemStartTime = item.start.getTime();
+                    var itemEndTime = item.end.getTime();
+                    if ((itemStartTime < endTime && itemStartTime > startTime) || (itemEndTime < endTime && itemEndTime > startTime)) {
+                        check = true;
+                    }
+                }
+            }            
+        })
+        return check
+    }
+
     var options = {
         start: start,
         end: end,
         locale: "ru",
         editable: true,
         multiselect: false,
+        stack: false,
         snap: function (date, scale, step) {
-            var hour = 60 * 60 * 1000;
             return Math.round(date / (24 * hour)) * (24 * hour) - 7 * hour;
+        },
+        groupTemplate: function (group, element, data) {
+            return `<div class='roomName'>${group.id} комната</div><div class='roomType'>${group.type}</div><div class='roomCapacity'>${group.capacity} мест</div> `;
         },
         onAdd: function (item, callback) {
             if (itemCreated)
@@ -36,16 +59,38 @@
             if (item.start <= (new Date()).getTime())
                 return callback(null);
             itemCreated = true;
+            newItemId = items.getIds()[items.getIds().length - 1] + 1;
+            item.id = newItemId;
+            item.content = "Новая бронь";
+            item.end = new Date(item.start.getTime() + 24 * hour);
+            item.className = "newItem";
             return callback(item);
         },
         onRemove: function (item, callback) {
-            itemCreated = false
-            callback(item);
+            itemCreated = false;
+            newItemId = null;
+            return callback(item);
+        },
+        onMove: function (item, callback) {
+            if (isIntercepting(item, timeline.getVisibleItems()))
+                return callback(null);
+            return callback(item);
         }
+
     };
 
-
-    // Create a Timeline
     var timeline = new vis.Timeline(container, items, groups, options);
+
+
 </script>
+<style>
+    .newItem {
+        background-color: green;
+    }
+    .vis-time-axis .vis-grid.vis-saturday,
+    .vis-time-axis .vis-grid.vis-sunday {
+        background: #f5f5f5;
+    }
+
+</style>
 

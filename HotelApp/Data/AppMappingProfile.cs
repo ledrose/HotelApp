@@ -14,7 +14,8 @@ namespace HotelApp.Data
         {
             CreateMap<Room, SchedulerGroupModel>()
                 .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.SpotNumber))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (src.SpotNumber == 1) ? "Нормальная" : (src.SpotNumber == 2) ? "Комфорт" : "Люкс"));
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (src.SpotNumber == 1) ? "Нормальная" : (src.SpotNumber == 2) ? "Комфорт" : "Люкс"))
+                .ForMember(dest => dest.SubgroupStack, opt => opt.MapFrom(src => false));
             CreateMap<Reservation, SchedulerItemModel>()
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndTime))
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartTime))
