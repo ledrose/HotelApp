@@ -12,7 +12,6 @@ namespace HotelApp.ViewModels
         public String Type { get; set; }
         public float PriceWeekends { get; set; }
         public float PriceWorkday { get; set; }
-        public bool SubgroupStack { get; set; }
     }
 
 }
