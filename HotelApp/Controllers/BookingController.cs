@@ -28,21 +28,19 @@ namespace HotelApp.Controllers
         public IActionResult Index()
         {
 
-            List<RoomScheduleModel> roomData = new List<RoomScheduleModel>();
+            List<SchedulerGroupModel> roomData = new List<SchedulerGroupModel>();
             foreach (Room room in _db.Rooms)
             {
-                roomData.Add(_mapper.Map<RoomScheduleModel>(room));
+                roomData.Add(_mapper.Map<SchedulerGroupModel>(room));
             }
-            ViewBag.RoomDatas = roomData;
+            ViewBag.GroupData = roomData;
 
-            List<SourceScheduleModel> sourceData = new List<SourceScheduleModel>();
+            List<SchedulerItemModel> sourceData = new List<SchedulerItemModel>();
             foreach (Reservation res in _db.Reservations)
             {
-                sourceData.Add(_mapper.Map<SourceScheduleModel>(res));
+                sourceData.Add(_mapper.Map<SchedulerItemModel>(res));
             }
-            ViewBag.datasources = sourceData;
-            ViewBag.newId = sourceData.Count + 1;
-            ViewBag.ResourceNames = new string[] { "HotelRoom" };
+            ViewBag.ItemData = sourceData;
             return View();
         }
 

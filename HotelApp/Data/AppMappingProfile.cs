@@ -12,15 +12,15 @@ namespace HotelApp.Data
     {
         public AppMappingProfile()
         {
-            CreateMap<Room, RoomScheduleModel>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Id.ToString() + " комната"))
+            CreateMap<Room, SchedulerGroupModel>()
                 .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.SpotNumber))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (src.SpotNumber == 1) ? "Нормальная" : (src.SpotNumber == 2) ? "Комфорт" : "Люкс"))
-                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => "#ea7a57"));
-            CreateMap<Reservation, SourceScheduleModel>()
-                .ForMember(dest => dest.Subject, opt => opt.MapFrom(src => "Забронировано"))
-                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => "Description"))
-                .ForMember(dest => dest.IsBlock, opt => opt.MapFrom(src => true));
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (src.SpotNumber == 1) ? "Нормальная" : (src.SpotNumber == 2) ? "Комфорт" : "Люкс"));
+            CreateMap<Reservation, SchedulerItemModel>()
+                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartTime))
+                .ForMember(dest => dest.Editable, opt => opt.MapFrom(src => false))
+                .ForMember(dest => dest.Group, opt => opt.MapFrom(src => src.RoomId))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => "Забронировано"));
             CreateMap<RegisterModel,User>();
             CreateMap<Reservation, AdminReservationModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))

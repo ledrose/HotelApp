@@ -1,405 +1,51 @@
-﻿@using HotelApp.Models
+﻿
+@using HotelApp.Models
 @model Reservation
 @{
-    ViewData["Title"] = "Booking Page";
-
-
+    ViewData["Title"] = "Index";
 }
 
-<div class="text-center">
 
-    <div class="schedule-wrapper">
-        <ejs-schedule id="schedule" width="100%" height="500px" cssClass="room-schedule" selectedDate="DateTime.Today" currentView="TimelineMonth" resourceHeaderTemplate="#resource-template" actionBegin="onActionBegin" eventRendered="onEventRendered" renderCell="onRenderCell" popupOpen="onPopupOpen" cellClick="onCellClick" actionComplete="onActionComplete">
-            <e-schedule-workhours start="00:00" end="24:00"></e-schedule-workhours>
-            <e-schedule-timescale slotCount="1" interval="240"></e-schedule-timescale>
-            <e-schedule-views>
-                <e-schedule-view option="TimelineWeek"></e-schedule-view>
-                <e-schedule-view option="TimelineMonth"></e-schedule-view>
-            </e-schedule-views>
-            <e-schedule-group enableCompactView="false" resources="@ViewBag.ResourceNames"></e-schedule-group>
-            <e-schedule-resources>
-                <e-schedule-resource dataSource="@ViewBag.RoomDatas" field="RoomId" title="Room Type" name="HotelRoom" allowMultiple="true" textField="Name" idField="Id" colorField="Color"></e-schedule-resource>
-            </e-schedule-resources>
-            <e-schedule-eventsettings dataSource="@ViewBag.datasources">
-                <e-eventsettings-fields>
-                    <e-field-subject name="Subject" title="Travel Summary"></e-field-subject>
-                    <e-field-location name="Location" title="Source"></e-field-location>
-                    <e-field-description name="Description" title="Comments"></e-field-description>
-                    <e-field-starttime name="StartTime" title="Departure Time"></e-field-starttime>
-                    <e-field-endtime name="EndTime" title="Arrival Time"></e-field-endtime>
-                </e-eventsettings-fields>
-            </e-schedule-eventsettings>
-        </ejs-schedule>
-    </div>
-        <form method="post" asp-action="Index" enctype="multipart/form-data">
-            <div class="border p-3">
-                <div asp-validation-summary="ModelOnly"></div>
-                <div class="row">
-                    <div class="col-8">
-
-                        <input id="stDate" type="datetime" value="@(DateTime.Now.ToString("dd.MM.yyyy, HH:mm"))" asp-for="StartTime" hidden class="form-control" />
-                        <input id="enDate" type="datetime" asp-for="EndTime" hidden class="form-control" />
-                        <input id="roomDatas" data-value="@ViewBag.RoomDatas" hidden/>                        
-                        
-                        <input id="roomId" asp-for="RoomId" class="form-control"  hidden />
-                       
-                        <div id="fPrice">Общая цена: 0 руб</div>
-                        <div class="form-group row">
-                            <div class="col-8 offset-4 row">
-                                <div class="col">
-                                    <input type="submit" class="btn btn-info w-100" value="Add" />
-                                </div>
-                                <div class="col">
-                                    <a asp-controller="RoomSelect" asp-action="Index" class="btn btn-success w-100">Back</a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <style>
-
-        .e-resource-text {
-            padding: 0px !important;
+<div id="visualization"></div>
+<script type="text/javascript">
+    var groupsSer = '@Html.Raw(Json.Serialize(ViewBag.GroupData))';
+    var groups = JSON.parse(groupsSer);
+    var itemsSer = '@Html.Raw(Json.Serialize(ViewBag.ItemData))';
+    var items = JSON.parse(itemsSer);
+    groups.forEach((group) => {
+        group.content = `<div class='roomName'>${group.id} комната</div><div class='roomType'>${group.type}</div><div class='roomCapacity'>${group.capacity} мест</div> `
+    });
+    // DOM element where the Timeline will be attached
+    var container = document.getElementById('visualization');
+    var start = new Date((new Date()).getTime() - 5 * 24 * 60 * 60 * 1000);
+    var end = new Date((new Date()).getTime() + 25 * 24 * 60 * 60 * 1000);
+    var itemCreated = false
+    var options = {
+        start: start,
+        end: end,
+        locale: "ru",
+        editable: true,
+        multiselect: false,
+        snap: function (date, scale, step) {
+            var hour = 60 * 60 * 1000;
+            return Math.round(date / (24 * hour)) * (24 * hour) - 7 * hour;
+        },
+        onAdd: function (item, callback) {
+            if (itemCreated)
+                return callback(null);
+            if (item.start <= (new Date()).getTime())
+                return callback(null);
+            itemCreated = true;
+            return callback(item);
+        },
+        onRemove: function (item, callback) {
+            itemCreated = false
+            callback(item);
         }
-
-        .e-schedule .e-timeline-view .e-resource-left-td {
-            vertical-align: bottom;
-        }
-
-            .e-schedule.e-device .e-timeline-view .e-resource-left-td {
-                width: 75px;
-            }
-
-            .room-schedule.e-schedule .e-timeline-view .e-resource-left-td {
-                width: 240px;
-            }
-
-            .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                display: flex;
-                font-weight: 500;
-                padding: 0;
-                height: 36px;
-            }
-
-                .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    border-color: #0000001f;
-                    border-style: solid;
-                    border-width: 1px 1px 0 0;
-                    flex: 0 0 33.3%;
-                    font-weight: 500;
-                    height: 36px;
-                    line-height: 36px;
-                    padding-left: 5px;
-                }
-
-                    .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div:last-child {
-                        border-right: 0;
-                    }
-
-            .e-schedule .e-timeline-view .e-block-appointment {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .bootstrap4 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text,
-            .bootstrap5 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                height: 37px;
-            }
-
-                .bootstrap4 .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    height: 37px;
-                    line-height: 37px;
-                }
-
-            .material-dark .e-schedule .e-resource-cells .template-wrap > div,
-            .material-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                border-color: #616161;
-            }
-
-            .fabric-dark .e-schedule .e-resource-cells .template-wrap > div,
-            .fabric-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                border-color: #414040;
-            }
-
-            .fluent-dark .e-schedule .e-resource-cells .template-wrap > div,
-            .fluent-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                border-color: #292827;
-            }
-
-            .bootstrap-dark .e-schedule .e-resource-cells .template-wrap > div,
-            .bootstrap-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                border-color: #505050;
-            }
-
-            .bootstrap5-dark .e-schedule .e-resource-cells .template-wrap > div,
-            .bootstrap5-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                border-color: #444c54;
-            }
-
-            .tailwind-dark .e-schedule .e-resource-cells .template-wrap > div {
-                border-color: #4b5563;
-            }
-
-            .highcontrast .e-schedule .e-resource-cells .template-wrap > div {
-                border-color: #969696;
-            }
-
-            .bootstrap4.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text,
-            .bootstrap5.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                height: 39px;
-            }
-
-                .bootstrap4.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    height: 39px;
-                    line-height: 39px;
-                }
-
-            .tailwind .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text,
-            .tailwind-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                height: 39px;
-            }
-
-                .tailwind .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div,
-                .tailwind-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    height: 39px;
-                    line-height: 39px;
-                }
-
-                .tailwind .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    background-color: #f3f4f6;
-                    border-color: #e5e7eb;
-                }
-
-                .tailwind-dark .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    background-color: #374151;
-                    border-color: #4b5563;
-                }
-
-            .tailwind.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text,
-            .tailwind-dark.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                height: 40px;
-            }
-
-                .tailwind.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div,
-                .tailwind-dark.e-bigger .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    height: 40px;
-                    line-height: 40px;
-                }
-
-            .highcontrast .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text {
-                height: 36px;
-            }
-
-                .highcontrast .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div {
-                    border-color: #969696;
-                }
+    };
 
 
-            .e-schedule .template-wrap, .e-resource-text {
-                display: flex;
-                height: 100%;
-                text-align: left;
-            }
+    // Create a Timeline
+    var timeline = new vis.Timeline(container, items, groups, options);
+</script>
 
-                .e-schedule .template-wrap > div, .e-resource-text > div {
-                    border-right: 1px solid #0000001f;
-                    flex: 0 0 33%;
-                    font-weight: 500;
-                    overflow: hidden;
-                    padding-left: 5px;
-                    text-overflow: ellipsis;
-                }
-
-                    .e-schedule .template-wrap > div:last-child, .e-resource-text > div:last-child {
-                        border-right: 0;
-                    }
-
-            .e-schedule .e-timeline-view .e-resource-cells,
-            .e-schedule .e-timeline-month-view .e-resource-cells {
-                padding-left: 0;
-            }
-
-            .e-schedule .e-timeline-view .e-date-header-wrap table col,
-            .e-schedule .e-timeline-view .e-content-wrap table col {
-                width: 100px;
-            }
-
-            .e-schedule .e-read-only {
-                opacity: .8;
-            }
-
-            @@media (max-width: 550px) {
-                .e-schedule .e-timeline-view .e-resource-left-td {
-                    width: 100px;
-                }
-
-                    .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div,
-                    .e-schedule .e-resource-cells .template-wrap > div {
-                        flex: 0 0 100%;
-                    }
-
-                        .e-schedule .e-resource-cells .template-wrap > div:first-child {
-                            border-right: 0;
-                        }
-
-                        .e-schedule .e-timeline-view .e-resource-left-td .e-resource-text > div:first-child {
-                            border-right: 0;
-                        }
-
-                .e-schedule .room-type,
-                .e-schedule .room-capacity {
-                    display: none;
-                }
-            }
-
-
-            /*
-        .e-schedule .template-wrap, .e-resource-text {
-            display: flex;
-            text-align: left;
-        }
-
-            .template-wrap :nth-child(n), .e-resource-text :nth-child(n) {
-                margin: -1px 1px 1px -1px;
-                line-height: 2em;
-                border-top: 1px solid blue;
-                border-left: 1px solid green;
-                padding: 0.4em;
-                float: left;
-            }
-         */
-    </style>
-    <script id="resource-template" type="text/x-template">
-        <div class='template-wrap'>
-            <div class="room-name">${getRoomName(data)}</div>
-            <div class="room-type">${getRoomType(data)}</div>
-            <div class="room-capacity">${getRoomCapacity(data)}</div>
-            <div class="room-priceWeekend">${getPrWeek(data)}</div>
-            <div class="room-priceWorkday">${getPrWork(data)}</div>
-        </div>
-    </script>
-    <script type="text/javascript">
-        var isReadOnly = function (endDate) {
-            return (endDate < Date.now());
-        };
-        window.getRoomName = function (value) {
-            return value.resourceData[value.resource.textField];
-        };
-        window.getRoomType = function (value) {
-            return value.resourceData.Type;
-        };
-        window.getRoomCapacity = function (value) {
-            return value.resourceData.Capacity;
-        };
-        window.getPrWeek = function (value) {
-            return value.resourceData.PriceWeekends;
-        };
-
-        window.getPrWork = function (value) {
-            return value.resourceData.PriceWorkday;
-        };
-
-
-        function onPopupOpen(args) {
-           //args.cancel = true
-        }
-
-
-        function onRenderCell(args) {
-            if (args.element.classList.contains('e-work-cells')) {
-                if (isReadOnly(args.date)) {
-                    args.element.setAttribute('aria-readonly', 'true');
-                    args.element.classList.add('e-read-only-cells');
-                }
-            }
-            if (args.elementType === 'emptyCells' && args.element.classList.contains('e-resource-left-td')) {
-                var target = args.element.querySelector('.e-resource-text');
-                target.innerHTML = '<div class="name">Rooms</div><div class="type">Type</div><div class="capacity">Capacity</div>';
-            }
-        }
-        function onEventRendered(args) {
-            var data = args.data;
-            if (isReadOnly(data.EndTime)) {
-                args.element.setAttribute('aria-readonly', 'true');
-                args.element.classList.add('e-read-only');
-            }
-        }
-        function onActionBegin(args) {
-            console.log(args);
-            if (args.requestType === 'eventCreate' || args.requestType === 'eventChange') {
-                var data;
-                if (args.requestType === 'eventCreate') {
-                    data = args.data[0];
-                }
-                else if (args.requestType === 'eventChange') {
-                    data = args.data;
-                }
-                if (!this.isSlotAvailable(data) || (data.StartTime < Date.now())) {
-                    args.cancel = true;
-                }
-            }
-        }
-        var resVisualized = false
-        function onCellClick(args) {
-            if (!resVisualized && (args.startTime > Date.now())) {
-                var scheduleObj = document.getElementById('schedule').ej2_instances[0];
-                var data = [{
-                    Id: @(ViewBag.newId),
-                    Subject: 'Бронирование',
-                    Description: 'Бронирование',
-                    RoomId: args.groupIndex + 1,
-                    StartTime: args.startTime,
-                    EndTime: args.endTime,
-                    IsBlock: false,
-                    IsAllDay: true
-                }];
-                console.log("Hy!!");
-                scheduleObj.addEvent(data);
-                if (args.cancel == false) {
-                    resVisualized = true;
-                }
-                
-            }
-
-
-        }
-        function onActionComplete(args) {
-            if (args.requestType == "eventChanged" || args.requestType == "eventCreated") {
-                var curRes = args.data[0];
-                var roomId = curRes.RoomId;
-                $("#stDate").val(transformDate(curRes.StartTime));
-                $("#enDate").val(transformDate(curRes.EndTime));
-                $("#roomId").val(roomId);
-                var price = 0;
-                
-                var priceWeekends = parseFloat($(".room-priceWeekend")[roomId - 1].innerHTML);
-                var priceWorkday = parseFloat($(".room-priceWorkday")[roomId - 1].innerHTML);
-                var loop = new Date(curRes.StartTime);
-                while (loop < curRes.EndTime) {
-                    var dayOfWeek = (loop.getDay()) % 7;
-                    if ((dayOfWeek == 6) || (dayOfWeek == 0)) {
-                        price +=priceWeekends;
-                    }
-                    else {
-                        price +=priceWorkday;
-                    }
-
-                    const newDate = loop.setDate(loop.getDate() + 1);
-                    loop = new Date(newDate);
-                }
-                $("#fPrice").html("Общая цена: "+price+" руб");
-
-            }
-
-        }
-
-
-        function transformDate(dt) {
-            return dt.getDate().toString() + "." + (dt.getMonth() + 1).toString() + "." + dt.getFullYear().toString() + ", " + dt.getHours().toString() + ":" + dt.getMinutes().toString();
-        }
-    </script>
