@@ -38,9 +38,7 @@
                     <div class="col-8">
 
                         <input id="stDate" type="datetime" value="@(DateTime.Now.ToString("dd.MM.yyyy, HH:mm"))" asp-for="StartTime" hidden class="form-control" />
-                        <input id="enDate" type="datetime" asp-for="EndTime" hidden class="form-control" />
-                        <input id="roomDatas" data-value="@ViewBag.RoomDatas" hidden/>                        
-                        
+                        <input id="enDate" type="datetime" asp-for="EndTime" hidden class="form-control" />             
                         <input id="roomId" asp-for="RoomId" class="form-control"  hidden />
                        
                         <div id="fPrice">Общая цена: 0 руб</div>

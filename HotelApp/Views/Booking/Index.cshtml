@@ -7,6 +7,36 @@
 
 
 <div id="visualization"></div>
+
+<form method="post" asp-action="Index" enctype="multipart/form-data">
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="row">
+            <div class="col-8">
+                <input id="stDate" type="datetime" asp-for="StartTime" class="form-control" hidden/>
+                <input id="enDate" type="datetime" asp-for="EndTime"  class="form-control" hidden/>
+                <input id="roomId" asp-for="RoomId" class="form-control" hidden/>
+
+                <div id="fPrice">Общая цена: 0 руб</div>
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+                        <div class="col">
+                            <input id="sendButton" type="submit" class="btn btn-info w-100" disabled value="Add" />
+                        </div>
+                        <div class="col">
+                            <a asp-controller="RoomSelect" asp-action="Index"  class="btn btn-success w-100">Back</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
 <script type="text/javascript">
     var groupsSer = '@Html.Raw(Json.Serialize(ViewBag.GroupData))';
     var groups = new vis.DataSet(JSON.parse(groupsSer));
@@ -20,6 +50,10 @@
     var end = new Date((new Date()).getTime() + 25 * 24 * hour);
     var itemCreated = false
     var newItemId = null;
+
+    function transformDate(dt) {
+        return dt.getDate().toString() + "." + (dt.getMonth() + 1).toString() + "." + dt.getFullYear().toString() + ", " + dt.getHours().toString() + ":" + dt.getMinutes().toString();
+    }
 
     function isIntercepting(item, idList) {
         var check = false;
@@ -35,9 +69,33 @@
                         check = true;
                     }
                 }
-            }            
+            }
         })
         return check
+    }
+
+
+    function updateForm(item) {
+
+        $("#stDate").val(transformDate(item.start));
+        $("#enDate").val(transformDate(item.end));
+        $("#roomId").val(item.group);
+        $("#sendButton").prop("disabled", false);
+        var price = 0
+        group = groups.get(item.group)
+        var loop = item.start;
+        while (loop < item.end) {
+            var dayOfWeek = (loop.getDay()) % 7;
+            if ((dayOfWeek == 6) || (dayOfWeek == 0)) {
+                price += group.priceWeekends;
+            }
+            else {
+                price += group.priceWorkday;
+            }
+            const newDate = loop.setDate(loop.getDate() + 1);
+            loop = new Date(newDate);
+        }
+        $("#fPrice").html("Общая цена: " + price + " руб");
     }
 
     var options = {
@@ -48,7 +106,7 @@
         multiselect: false,
         stack: false,
         snap: function (date, scale, step) {
-            return Math.round(date / (24 * hour)) * (24 * hour) - 7 * hour;
+            return Math.floor(date / (24 * hour)) * (24 * hour) - 7 * hour;
         },
         groupTemplate: function (group, element, data) {
             return `<div class='roomName'>${group.id} комната</div><div class='roomType'>${group.type}</div><div class='roomCapacity'>${group.capacity} мест</div> `;
@@ -64,17 +122,22 @@
             item.content = "Новая бронь";
             item.end = new Date(item.start.getTime() + 24 * hour);
             item.className = "newItem";
-            return callback(item);
+            callback(item);
+            return updateForm(item);
         },
         onRemove: function (item, callback) {
             itemCreated = false;
             newItemId = null;
+            $("#sendButton").prop("disabled", true);
             return callback(item);
         },
         onMove: function (item, callback) {
             if (isIntercepting(item, timeline.getVisibleItems()))
                 return callback(null);
-            return callback(item);
+            if (item.start <= (new Date()).getTime())
+                return callback(null);
+            callback(item);
+            return updateForm(item);
         }
 
     };
@@ -87,10 +150,10 @@
     .newItem {
         background-color: green;
     }
+
     .vis-time-axis .vis-grid.vis-saturday,
     .vis-time-axis .vis-grid.vis-sunday {
         background: #f5f5f5;
     }
-
 </style>
 
