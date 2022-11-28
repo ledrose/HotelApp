@@ -13,5 +13,6 @@ namespace HotelApp.ViewModels
         public int RoomId { get; set; }
         public String Name { get; set; }
         public String Surname { get; set; }
+        public float FullPrice { get; set; }
     }
 }

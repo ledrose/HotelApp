@@ -43,13 +43,13 @@ namespace HotelApp.Controllers
         //post -create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Room obj)
+        public IActionResult CreatePost(Room obj)
         {
             if (ModelState.IsValid) 
             {
                 _db.Rooms.Add(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
             return View(obj);
         }
@@ -66,13 +66,13 @@ namespace HotelApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Room obj)
+        public IActionResult EditPost(Room obj)
         {
             if (ModelState.IsValid)
             {
                 _db.Rooms.Update(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("List");
             }
             return View(obj);
         }
@@ -96,7 +96,7 @@ namespace HotelApp.Controllers
                 return NotFound();
             _db.Rooms.Remove(obj);
             _db.SaveChanges();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("List");
         }
     }
 }

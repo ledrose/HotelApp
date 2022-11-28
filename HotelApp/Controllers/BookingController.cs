@@ -46,7 +46,7 @@ namespace HotelApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(Reservation res)
+        public IActionResult IndexPost(Reservation res)
         {
             if (ModelState.IsValid)
             {
@@ -55,7 +55,7 @@ namespace HotelApp.Controllers
                 res.UserId = user.Id;
                 _db.Reservations.Add(res);
                 _db.SaveChanges();
-                return RedirectToAction("Index", "RoomSelect");
+                return RedirectToAction("Index");
             }
             return View(res);
         }
@@ -86,7 +86,7 @@ namespace HotelApp.Controllers
                 return NotFound();
             _db.Reservations.Remove(obj);
             _db.SaveChanges();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("List");
         }
 
         public IActionResult AdminList()

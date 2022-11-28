@@ -8,23 +8,30 @@
 
 <div id="visualization"></div>
 
-<form method="post" asp-action="Index" enctype="multipart/form-data">
+<form method="post" asp-action="IndexPost" enctype="multipart/form-data">
     <div class="border p-3">
         <div asp-validation-summary="ModelOnly"></div>
         <div class="row">
             <div class="col-8">
-                <input id="stDate" type="datetime" asp-for="StartTime" class="form-control" hidden/>
-                <input id="enDate" type="datetime" asp-for="EndTime"  class="form-control" hidden/>
-                <input id="roomId" asp-for="RoomId" class="form-control" hidden/>
+                <input id="stDate" type="datetime" asp-for="StartTime" class="form-control" hidden />
+                <input id="enDate" type="datetime" asp-for="EndTime" class="form-control" hidden />
+                <input id="roomId" asp-for="RoomId" class="form-control" hidden />
 
-                <div id="fPrice">Общая цена: 0 руб</div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="FullPrice">Общая стоимость:</label>
+                    </div>
+                    <div class="col-8">
+                        <input id="fPrice" type="number" asp-for="FullPrice" class="form-control" readonly/>
+                    </div>
+                </div>
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
                         <div class="col">
                             <input id="sendButton" type="submit" class="btn btn-info w-100" disabled value="Add" />
                         </div>
                         <div class="col">
-                            <a asp-controller="RoomSelect" asp-action="Index"  class="btn btn-success w-100">Back</a>
+                            <a asp-controller="RoomSelect" asp-action="Index" class="btn btn-success w-100">Back</a>
                         </div>
                     </div>
                 </div>
@@ -95,7 +102,7 @@
             const newDate = loop.setDate(loop.getDate() + 1);
             loop = new Date(newDate);
         }
-        $("#fPrice").html("Общая цена: " + price + " руб");
+        $("#fPrice").val(price);
     }
 
     var options = {
@@ -129,6 +136,7 @@
             itemCreated = false;
             newItemId = null;
             $("#sendButton").prop("disabled", true);
+            $("#fPrice").val(0);
             return callback(item);
         },
         onMove: function (item, callback) {

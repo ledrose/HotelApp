@@ -18,5 +18,8 @@ namespace HotelApp.Models
 
         public int UserId { get; set; }
         public User User { get; set; }
+
+        public float FullPrice { get; set; }
+
     }
 }
