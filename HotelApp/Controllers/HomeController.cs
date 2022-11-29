@@ -21,10 +21,7 @@ namespace HotelApp.Controllers
         }
 
         public IActionResult Index()
-
         {
-            //return RedirectToAction("Index", "Booking");
-            //string role = User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
             return View();
         }
 

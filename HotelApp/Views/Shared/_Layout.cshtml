@@ -35,7 +35,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="AdminList">Список всех броней</a>
                             </li>
                         }
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated && !User.IsInRole("admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="List">Список броней</a>

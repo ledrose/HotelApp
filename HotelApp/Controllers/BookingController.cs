@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HotelApp.Controllers
 {
@@ -35,12 +36,12 @@ namespace HotelApp.Controllers
             }
             ViewBag.GroupData = roomData;
 
-            List<SchedulerItemModel> sourceData = new List<SchedulerItemModel>();
+            List<SchedulerItemModel> resData = new List<SchedulerItemModel>();
             foreach (Reservation res in _db.Reservations)
             {
-                sourceData.Add(_mapper.Map<SchedulerItemModel>(res));
+                resData.Add(_mapper.Map<SchedulerItemModel>(res));
             }
-            ViewBag.ItemData = sourceData;
+            ViewBag.ItemData = resData;
             return View();
         }
 
@@ -86,7 +87,11 @@ namespace HotelApp.Controllers
                 return NotFound();
             _db.Reservations.Remove(obj);
             _db.SaveChanges();
-            return RedirectToAction("List");
+            if (HttpContext.User.IsInRole("admin"))
+                return RedirectToAction("AdminList");
+            else
+                return RedirectToAction("List");
+
         }
 
         public IActionResult AdminList()

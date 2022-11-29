@@ -72,7 +72,9 @@
                     var endTime = (new Date(curItem.end)).getTime();
                     var itemStartTime = item.start.getTime();
                     var itemEndTime = item.end.getTime();
-                    if ((itemStartTime < endTime && itemStartTime > startTime) || (itemEndTime < endTime && itemEndTime > startTime)) {
+                    if ((itemStartTime < endTime && itemStartTime > startTime) ||
+                        (itemEndTime < endTime && itemEndTime > startTime) ||
+                        (itemStartTime <= startTime && itemEndTime >= endTime)) {
                         check = true;
                     }
                 }
@@ -87,7 +89,6 @@
         $("#stDate").val(transformDate(item.start));
         $("#enDate").val(transformDate(item.end));
         $("#roomId").val(item.group);
-        $("#sendButton").prop("disabled", false);
         var price = 0
         group = groups.get(item.group)
         var loop = item.start;
@@ -103,6 +104,7 @@
             loop = new Date(newDate);
         }
         $("#fPrice").val(price);
+        $("#sendButton").prop("disabled", false);
     }
 
     var options = {
@@ -123,11 +125,13 @@
                 return callback(null);
             if (item.start <= (new Date()).getTime())
                 return callback(null);
+            item.end = new Date(item.start.getTime() + 24 * hour);
+            if (isIntercepting(item, timeline.getVisibleItems()))
+                return callback(null);
             itemCreated = true;
             newItemId = items.getIds()[items.getIds().length - 1] + 1;
             item.id = newItemId;
             item.content = "Новая бронь";
-            item.end = new Date(item.start.getTime() + 24 * hour);
             item.className = "newItem";
             callback(item);
             return updateForm(item);
