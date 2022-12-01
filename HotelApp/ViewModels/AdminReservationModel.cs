@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace HotelApp.ViewModels
 {
-    public class SourceScheduleModel
+    public class AdminReservationModel
     {
         public int Id { get; set; }
-        public string Subject { get; set; }
-        public String Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public bool IsBlock { get; set; }
         public int RoomId { get; set; }
+        public String Name { get; set; }
+        public String Surname { get; set; }
+        public float FullPrice { get; set; }
     }
 }

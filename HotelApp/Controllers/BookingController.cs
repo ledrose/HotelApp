@@ -1,6 +1,7 @@
 ﻿using HotelApp.Data;
 using HotelApp.Models;
 using HotelApp.ViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,92 +11,52 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HotelApp.Controllers
 {
     [Authorize]
     public class BookingController : Controller
     {
-        private AppDbContext db;
-
-        public BookingController(AppDbContext _db)
+        private readonly AppDbContext _db;
+        private readonly IMapper _mapper;
+        public BookingController(AppDbContext db, IMapper mapper)
         {
-            db = _db;
+            _db = db;
+            _mapper = mapper;
         }
 
-        public IActionResult Index(int Id)
+        public IActionResult Index()
         {
 
-            List<RoomScheduleModel> roomData = new List<RoomScheduleModel>();
-            IEnumerable<Room> rooms = db.Rooms;
-            foreach (Room room in rooms)
+            List<SchedulerGroupModel> roomData = new List<SchedulerGroupModel>();
+            foreach (Room room in _db.Rooms)
             {
-                roomData.Add(new RoomScheduleModel {
-                    Id=room.Id,
-                    Name=(room.Id.ToString()+" комната"),
-                    Capacity=room.SpotNumber,
-                    Type=(room.SpotNumber==1)? "Нормальная" : (room.SpotNumber == 2)?"Улучшенная":"Элитная",
-                    PriceWeekends=room.PriceWeekends,
-                    PriceWorkday = room.PriceWorkday,
-                    Color = "#ea7a57"
-                });;
+                roomData.Add(_mapper.Map<SchedulerGroupModel>(room));
             }
-            ViewBag.RoomDatas = roomData;
+            ViewBag.GroupData = roomData;
 
-            List<SourceScheduleModel> sourceData = new List<SourceScheduleModel>();
-            IEnumerable<Reservation> reservations = db.Reservations;
-            foreach (Reservation res in reservations)
+            List<SchedulerItemModel> resData = new List<SchedulerItemModel>();
+            foreach (Reservation res in _db.Reservations)
             {
-                sourceData.Add(new SourceScheduleModel
-                {
-                    Id=res.Id,
-                    Subject = "Забронировано",
-                    Description ="Description",
-                    StartTime=res.StartTime,
-                    EndTime=res.EndTime,
-                    RoomId=res.RoomId,
-                    IsBlock = true
-                });
+                resData.Add(_mapper.Map<SchedulerItemModel>(res));
             }
-            ViewBag.datasources = sourceData;
-            ViewBag.newId = sourceData.Count()+1;
-
-            ViewBag.ResourceNames = new string[] { "HotelRoom" };
-
-            /*
-            List<SourceScheduleModel> reservs = new List<SourceScheduleModel>();
-            IEnumerable<Reservation> resList = db.Reservations;
-            foreach (Reservation reserv in resList)
-            {
-                reservs.Add(new SourceScheduleModel {RoomId=reserv.RoomId, StartTime=reserv.StartTime,EndTime=reserv.EndTime,IsAllDay=false,Subject="Hey",Id=reserv.Id});
-            }
-            ViewBag.dataSource = reservs;
-
-            List<RoomScheduleModel> rooms = new List<RoomScheduleModel>();
-            IEnumerable<Room> roomList = db.Rooms;
-            foreach (Room room in roomList)
-            {
-                rooms.Add(new RoomScheduleModel {Id=room.Id,Text=room.Id+" комната",Color= "#cb6bb2" });
-            }
-            ViewBag.rooms = rooms;
-            */
-
-
+            ViewBag.ItemData = resData;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(Reservation res)
+        public IActionResult IndexPost(Reservation res)
         {
             if (ModelState.IsValid)
             {
                 var userName = HttpContext.User.Identity.Name;
-                var user = db.Users.FirstOrDefault(u=>u.Email==userName);
+                var user = _db.Users.FirstOrDefault(u=>u.Email==userName);
                 res.UserId = user.Id;
-                db.Reservations.Add(res);
-                db.SaveChanges();
-                return RedirectToAction("Index", "RoomSelect");
+                _db.Reservations.Add(res);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
             }
             return View(res);
         }
@@ -103,10 +64,44 @@ namespace HotelApp.Controllers
         public IActionResult List()
         {
             var userName = HttpContext.User.Identity.Name;
-            var user = db.Users.FirstOrDefault(u => u.Email == userName);
-            IEnumerable<Reservation> res =db.Reservations.Where(r => r.UserId == user.Id);
+            var user = _db.Users.FirstOrDefault(u => u.Email == userName);
+            IEnumerable<Reservation> res =_db.Reservations.Where(r => r.UserId == user.Id);
             return View(res);
         }
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            Reservation obj = _db.Reservations.Find(id);
+            if (obj == null)
+                return NotFound();
+            return View(obj);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(int? id)
+        {
+            var obj = _db.Reservations.Find(id);
+            if (obj == null)
+                return NotFound();
+            _db.Reservations.Remove(obj);
+            _db.SaveChanges();
+            if (HttpContext.User.IsInRole("admin"))
+                return RedirectToAction("AdminList");
+            else
+                return RedirectToAction("List");
+
+        }
+
+        public IActionResult AdminList()
+        {
+            var adminRes = new List<AdminReservationModel>();
+            var reservations = _db.Reservations.Include(r => r.User);
+            foreach (Reservation r in reservations) {
+                adminRes.Add(_mapper.Map<AdminReservationModel>(r));
+            }
+            return View(adminRes);
+        }
     }
 }

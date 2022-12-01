@@ -1,5 +1,5 @@
 ﻿
-@model IEnumerable<Reservation>
+@model IEnumerable<HotelApp.ViewModels.AdminReservationModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -28,6 +28,9 @@
                         Room
                     </td>
                     <td>
+                        Person
+                    </td>
+                    <td>
                         Price
                     </td>
                 </tr>
@@ -36,10 +39,11 @@
                 @foreach (var obj in Model)
                 {
                 <tr>
-                    <td width="10%">@obj.Id</td>
-                    <td width="30%">@(obj.StartTime.ToLongDateString()+" - "+obj.EndTime.ToLongDateString())</td>
-                    <td width="20%">@(obj.RoomId+" комната")</td>
-                    <td width="20%">@(obj.FullPrice+" руб")</td>
+                    <td width="5%">@obj.Id</td>
+                    <td width="25%">@(obj.StartTime.ToLongDateString()+" - "+obj.EndTime.ToLongDateString())</td>
+                    <td width="10%">@(obj.RoomId+" комната")</td>
+                    <td width="15%">@(obj.Name+" "+obj.Surname)</td>
+                    <td width="10%">@(obj.FullPrice+" руб")</td>
                     <td width="10%" class="text-center">
                         <div class="btn-group w-75" role="group">
                             <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="Booking" class="btn btn-danger mx-2">

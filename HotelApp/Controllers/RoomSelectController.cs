@@ -43,14 +43,13 @@ namespace HotelApp.Controllers
         //post -create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Room obj)
+        public IActionResult CreatePost(Room obj)
         {
             if (ModelState.IsValid) 
             {
-                obj = ConvertImageToByte(obj);
                 _db.Rooms.Add(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
             return View(obj);
         }
@@ -67,24 +66,20 @@ namespace HotelApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Room obj)
+        public IActionResult EditPost(Room obj)
         {
             if (ModelState.IsValid)
             {
-                if (obj.Image!=null)
-                {
-                    obj=ConvertImageToByte(obj);
-                }
                 _db.Rooms.Update(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("List");
             }
             return View(obj);
         }
 
         public IActionResult Delete(int? id)
         {
-            if (id == null || id == 0)
+            if (id == null)
                 return NotFound();
             Room obj = _db.Rooms.Find(id);
             if (obj == null)
@@ -101,24 +96,7 @@ namespace HotelApp.Controllers
                 return NotFound();
             _db.Rooms.Remove(obj);
             _db.SaveChanges();
-            return RedirectToAction("Index","Home");
-        }
-    
-        private Room ConvertImageToByte(Room room)
-        {
-            if (room.Image==null)
-            {
-                return room; //TODO
-            }
-            using (var target = new MemoryStream())
-            {
-
-                room.Image.CopyTo(target);
-                room.ByteImage = Convert.ToBase64String(target.ToArray());
-            }
-            room.ContentType = room.Image.ContentType;
-            room.SourceFileName= System.IO.Path.GetFileName(room.Image.FileName);
-            return room;
+            return RedirectToAction("List");
         }
     }
 }

@@ -1,27 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HotelApp.Models;
-using HotelApp.ViewModel;
+using HotelApp.ViewModels;
 using HotelApp.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace HotelApp.Controllers
 {
     public class AccountController : Controller
     {
-        private AppDbContext db;
+        private readonly AppDbContext _db;
+        private readonly IMapper _mapper;
 
-        public AccountController(AppDbContext _db)
+        public AccountController(AppDbContext db, IMapper mapper)
         {
-            db = _db;
+            _db = db;
+            _mapper = mapper;
         }
+
 
         [HttpGet]
         public IActionResult Login()
@@ -35,10 +37,9 @@ namespace HotelApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users
+                User user = await _db.Users
                     .Include(u=>u.Role)
                     .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
-
                 if (user != null)
                 {
                     await Authenticate(user);
@@ -61,20 +62,16 @@ namespace HotelApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                User user = await _db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user == null)
                 {
-                    user = new User { Email = model.Email, Password = model.Password, Age=model.Age,Name=model.Name,Surname=model.Surname};
-                    Role userRole = await db.Roles.FirstOrDefaultAsync(r => r.Name=="user");
+                    user = _mapper.Map<User>(model);
+                    Role userRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name=="user");
                     if (userRole != null)
                         user.Role = userRole;
-
-                    db.Users.Add(user);
-
-                    await db.SaveChangesAsync();
-
+                    _db.Users.Add(user);
+                    await _db.SaveChangesAsync();
                     await Authenticate(user);
-
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -93,8 +90,7 @@ namespace HotelApp.Controllers
                 new Claim(ClaimsIdentity.DefaultNameClaimType,user.Email),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
             };
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie",ClaimsIdentity.DefaultNameClaimType,ClaimsIdentity.DefaultRoleClaimType);
-
+            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
 

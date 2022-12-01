@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,8 +25,34 @@ namespace HotelApp.Models
         public int Type { get; set; }
         public String Description { get; set; }
 
+        private IFormFile image;
         [NotMapped]
-        public IFormFile Image { get; set; }
+        public IFormFile Image {
+            get
+            {
+                return image;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    image = null;
+                }
+                else
+                {
+                    using (var target = new MemoryStream())
+                    {
+
+                        value.CopyTo(target);
+                        ByteImage = Convert.ToBase64String(target.ToArray());
+
+                    }
+                    ContentType = value.ContentType;
+                    SourceFileName = Path.GetFileName(value.FileName);
+                    image = value;
+                }
+            }
+        }
 
 
         public String ByteImage { get; set; }
