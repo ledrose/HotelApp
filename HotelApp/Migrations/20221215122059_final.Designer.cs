@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220912154522_mig1")]
-    partial class mig1
+    [Migration("20221215122059_final")]
+    partial class final
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,11 +28,11 @@ namespace HotelApp.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("ChildrenBed")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<float>("FullPrice")
+                        .HasColumnType("real");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
@@ -152,6 +152,7 @@ namespace HotelApp.Migrations
                             Id = 1,
                             Age = 0,
                             Email = "admin@mail.ru",
+                            Name = "admin",
                             Password = "123456",
                             RoleId = 1
                         });

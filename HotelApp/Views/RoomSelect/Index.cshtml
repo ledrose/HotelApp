@@ -22,13 +22,9 @@
                     </h5>
                     <p class="card-text">Цена в рабочие дни: @(obj.PriceWorkday) руб./сут</p>
                     <p class="card-text">Цена в выходные дни: @(obj.PriceWeekends) руб./сут</p>
-                    @if (@obj.Description == null)
+                    @if (@obj.Description != null)
                     {
                         <p class="card-text">@(obj.Description)</p>
-                    }
-                    else
-                    {
-                        <p class="card-text">@obj.Description</p>
                     }
                     <a asp-controller="Booking" asp-action="Index" asp-route-Id="@obj.Id" class="btn btn-primary">Забронировать</a>
                 </div>

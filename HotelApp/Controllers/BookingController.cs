@@ -36,10 +36,15 @@ namespace HotelApp.Controllers
             }
             ViewBag.GroupData = roomData;
 
+            var userName = HttpContext.User.Identity.Name;
+            var userId = _db.Users.FirstOrDefault(u => u.Email == userName).Id;
+
             List<SchedulerItemModel> resData = new List<SchedulerItemModel>();
             foreach (Reservation res in _db.Reservations)
             {
-                resData.Add(_mapper.Map<SchedulerItemModel>(res));
+                var item = _mapper.Map<SchedulerItemModel>(res);
+                if (item.UserId == userId) item.ClassName = "belongToUser";
+                resData.Add(item);
             }
             ViewBag.ItemData = resData;
             return View();
@@ -63,9 +68,21 @@ namespace HotelApp.Controllers
         [Authorize]
         public IActionResult List()
         {
-            var userName = HttpContext.User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.Email == userName);
-            IEnumerable<Reservation> res =_db.Reservations.Where(r => r.UserId == user.Id);
+            IEnumerable<Reservation> reservations;
+            if (HttpContext.User.IsInRole("admin"))
+            {
+                reservations = _db.Reservations.Include(r => r.User);
+            }
+            else {
+                var userName = HttpContext.User.Identity.Name;
+                var user = _db.Users.FirstOrDefault(u => u.Email == userName);
+                reservations = _db.Reservations.Where(r => r.UserId == user.Id);
+            }
+            var res = new List<ReservationViewModel>();
+            foreach (Reservation r in reservations)
+            {
+                res.Add(_mapper.Map<ReservationViewModel>(r));
+            }
             return View(res);
         }
         public IActionResult Delete(int? id)
@@ -87,21 +104,10 @@ namespace HotelApp.Controllers
                 return NotFound();
             _db.Reservations.Remove(obj);
             _db.SaveChanges();
-            if (HttpContext.User.IsInRole("admin"))
-                return RedirectToAction("AdminList");
-            else
-                return RedirectToAction("List");
+            return RedirectToAction("List");
 
         }
 
-        public IActionResult AdminList()
-        {
-            var adminRes = new List<AdminReservationModel>();
-            var reservations = _db.Reservations.Include(r => r.User);
-            foreach (Reservation r in reservations) {
-                adminRes.Add(_mapper.Map<AdminReservationModel>(r));
-            }
-            return View(adminRes);
-        }
+        
     }
 }
