@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HotelApp.ViewModels
 {
-    public class AdminReservationModel
+    public class ReservationViewModel
     {
         public int Id { get; set; }
         public DateTime StartTime { get; set; }

@@ -22,7 +22,7 @@ namespace HotelApp.Data
                 .ForMember(dest => dest.Group, opt => opt.MapFrom(src => src.RoomId))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => "Забронировано"));
             CreateMap<RegisterModel,User>();
-            CreateMap<Reservation, AdminReservationModel>()
+            CreateMap<Reservation, ReservationViewModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.User.Surname));
         }

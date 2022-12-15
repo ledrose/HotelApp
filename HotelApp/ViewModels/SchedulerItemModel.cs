@@ -13,5 +13,7 @@ namespace HotelApp.ViewModels
         public bool Editable { get; set; }
         public int Group { get; set; }
         public String Content { get; set; }
+        public int UserId { get; set; }
+        public String ClassName { get; set; }
     }
 }

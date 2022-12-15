@@ -1,13 +1,14 @@
 ﻿
-@model IEnumerable<Reservation>
+@model IEnumerable<HotelApp.ViewModels.ReservationViewModel>
 @{
     ViewData["Title"] = "Index";
+    var admin = User.IsInRole("admin");
 }
 
 <div class="container p-3">
     <div class="row pt-4">
         <div class="col-6">
-            <h2 class="text-primary">Reservations List</h2>
+            <h2 class="text-primary">Список броней</h2>
         </div>
     </div>
 
@@ -18,18 +19,14 @@
         <table class="table table-bordered table-striped" style="width:100%">
             <thead>
                 <tr>
-                    <td>
-                        id
-                    </td>
-                    <td>
-                        Date
-                    </td>
-                    <td>
-                        Room
-                    </td>
-                    <td>
-                        Price
-                    </td>
+                    <td>id</td>
+                    <td>Date</td>
+                    <td>Room</td>
+                    @if (admin)
+                    {
+                        <td>Person</td>
+                    }
+                    <td>Price</td>
                 </tr>
             </thead>
             <tbody>
@@ -39,7 +36,11 @@
                     <td width="10%">@obj.Id</td>
                     <td width="30%">@(obj.StartTime.ToLongDateString()+" - "+obj.EndTime.ToLongDateString())</td>
                     <td width="20%">@(obj.RoomId+" комната")</td>
-                    <td width="20%">@(obj.FullPrice+" руб")</td>
+                    @if (admin)
+                    {
+                        <td width="15%">@(obj.Name+" "+obj.Surname)</td>
+                    }
+                    <td width="10%">@(obj.FullPrice+" руб")</td>
                     <td width="10%" class="text-center">
                         <div class="btn-group w-75" role="group">
                             <a asp-action="Delete" asp-route-Id="@obj.Id" asp-controller="Booking" class="btn btn-danger mx-2">
@@ -57,4 +58,4 @@
         <p>No reservations exist</p>
     }
 </div>
-
+    
